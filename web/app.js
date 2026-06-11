@@ -2452,6 +2452,10 @@ function renderStructuredDocumentPreview(container, text, corrections) {
     }
     
     container.appendChild(docShell);
+    
+    // Reveal Hugging Face upload button
+    const saveBtn = document.getElementById('btn-save-hf');
+    if (saveBtn) saveBtn.style.display = 'block';
 }
 
 // HTML Diff Highlighter and tab populator
@@ -3630,6 +3634,163 @@ function generateDynamicGeminiMock(rawText, w, h) {
             { original: "स कार्", corrected: "सरकार", reason: "Grammar reconstruction check." }
         ]
     };
+}
+
+// -------------------------------------------------------------
+// HUGGING FACE DIRECT UPLOADER HANDLERS
+// -------------------------------------------------------------
+function openHFUploadModal() {
+    const modal = document.getElementById('hf-modal');
+    if (!modal) return;
+    
+    // Get text from preview container, stripping HTML tags
+    const textPreview = document.getElementById('ai-corrected-text-preview');
+    const hfText = textPreview ? textPreview.innerText.trim() : '';
+    
+    document.getElementById('hf-text-input').value = hfText;
+    document.getElementById('hf-upload-status').textContent = '';
+    
+    // Load previously saved token/username from localStorage if available
+    const savedToken = localStorage.getItem('hf_write_token');
+    const savedUsername = localStorage.getItem('hf_username');
+    const savedDataset = localStorage.getItem('hf_dataset');
+    
+    if (savedToken) document.getElementById('hf-token-input').value = savedToken;
+    if (savedUsername) document.getElementById('hf-username-input').value = savedUsername;
+    if (savedDataset) document.getElementById('hf-dataset-input').value = savedDataset;
+    
+    modal.style.display = 'flex';
+}
+
+function closeHFUploadModal() {
+    const modal = document.getElementById('hf-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function submitHFUpload() {
+    const token = document.getElementById('hf-token-input').value.trim();
+    const username = document.getElementById('hf-username-input').value.trim();
+    const dataset = document.getElementById('hf-dataset-input').value.trim();
+    const text = document.getElementById('hf-text-input').value.trim();
+    const statusDiv = document.getElementById('hf-upload-status');
+    
+    if (!token || !username || !dataset || !text) {
+        statusDiv.style.color = '#ef4444';
+        statusDiv.textContent = '❌ All fields (Token, Username, Dataset, Text) are required.';
+        return;
+    }
+    
+    // Save to localStorage for future use
+    localStorage.setItem('hf_write_token', token);
+    localStorage.setItem('hf_username', username);
+    localStorage.setItem('hf_dataset', dataset);
+    
+    statusDiv.style.color = '#38bdf8';
+    statusDiv.textContent = '⏳ Preparing file and metadata...';
+    
+    try {
+        // 1. Get binarized canvas image as Base64
+        // If interactive visualizer canvas exists, use it, otherwise use main upload canvas
+        const canvas = document.getElementById('processed-canvas') || document.getElementById('upload-canvas');
+        if (!canvas) {
+            throw new Error('Processed document canvas not found.');
+        }
+        
+        const dataUrl = canvas.toDataURL('image/png');
+        const base64Image = dataUrl.split(',')[1];
+        
+        const timestamp = Date.now();
+        const imagePath = `train/scanned_line_${timestamp}.png`;
+        const metadataPath = `train/metadata.jsonl`;
+        
+        // 2. Fetch existing metadata.jsonl (if it exists)
+        statusDiv.textContent = '⏳ Fetching existing metadata from Hugging Face...';
+        const metaUrl = `https://huggingface.co/api/datasets/${username}/${dataset}/raw/main/${metadataPath}`;
+        
+        let existingMetadata = '';
+        try {
+            const getResponse = await fetch(metaUrl, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (getResponse.ok) {
+                existingMetadata = await getResponse.text();
+            }
+        } catch (e) {
+            console.log('No existing metadata.jsonl found, creating new one.', e);
+        }
+        
+        // 3. Append the new row to metadata.jsonl
+        const newRecord = JSON.stringify({ file_name: `scanned_line_${timestamp}.png`, text: text }, null, 0);
+        const updatedMetadata = existingMetadata.trim() ? (existingMetadata.trim() + '\n' + newRecord + '\n') : (newRecord + '\n');
+        
+        // Encode metadata content to Base64 (supporting Devanagari characters safely)
+        const base64Metadata = btoa(unescape(encodeURIComponent(updatedMetadata)));
+        
+        // 4. Submit Commit via Hugging Face REST API
+        statusDiv.textContent = '⏳ Submitting commit to Hugging Face...';
+        const commitUrl = `https://huggingface.co/api/datasets/${username}/${dataset}/commit/main`;
+        
+        const commitPayload = {
+            files: [
+                {
+                    path: imagePath,
+                    content: base64Image,
+                    encoding: 'base64'
+                },
+                {
+                    path: metadataPath,
+                    content: base64Metadata,
+                    encoding: 'base64'
+                }
+            ],
+            commit_message: `Add real scan line to dataset via PeakOCR web workspace`,
+            repo_type: 'dataset'
+        };
+        
+        const commitResponse = await fetch(commitUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(commitPayload)
+        });
+        
+        if (!commitResponse.ok) {
+            const errorText = await commitResponse.text();
+            throw new Error(`HF Commit API failed: ${errorText}`);
+        }
+        
+        statusDiv.style.color = '#10b981';
+        statusDiv.textContent = '✅ Success! Image and metadata synced to Hugging Face.';
+        
+        // Hide modal after a brief delay
+        setTimeout(() => {
+            closeHFUploadModal();
+            // Show toast notification
+            showToast('Successfully synced scan to Hugging Face dataset!');
+        }, 1500);
+        
+    } catch (err) {
+        console.error(err);
+        statusDiv.style.color = '#ef4444';
+        statusDiv.textContent = `❌ Error: ${err.message}`;
+    }
+}
+
+// Simple toast notification helper
+function showToast(message) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = 'toast show';
+    toast.style.cssText = 'background: rgba(16, 185, 129, 0.95); color: #fff; padding: 0.75rem 1.25rem; border-radius: 8px; margin-top: 0.5rem; font-family: var(--font-inter); font-size: 0.85rem; box-shadow: 0 10px 20px rgba(0,0,0,0.3); transition: opacity 0.3s ease-out;';
+    toast.textContent = message;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
 
