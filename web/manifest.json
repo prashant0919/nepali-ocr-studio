@@ -1,0 +1,16 @@
+{
+  "short_name": "PeakOCR",
+  "name": "Mountmind PeakOCR Studio",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": ".",
+  "background_color": "#050d18",
+  "theme_color": "#082c54",
+  "display": "standalone",
+  "orientation": "any"
+}

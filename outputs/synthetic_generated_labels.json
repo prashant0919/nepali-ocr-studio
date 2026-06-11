@@ -1,0 +1,57 @@
+{
+    "image_file": "synthetic_generated_line.png",
+    "image_dimensions": [
+        700,
+        160
+    ],
+    "annotations": [
+        {
+            "id": 1,
+            "bbox": [
+                179,
+                58,
+                68,
+                45
+            ],
+            "area": 3060.0,
+            "text": "नेपाल",
+            "category": "text"
+        },
+        {
+            "id": 2,
+            "bbox": [
+                258,
+                58,
+                68,
+                45
+            ],
+            "area": 3060.0,
+            "text": "सरकार",
+            "category": "text"
+        },
+        {
+            "id": 3,
+            "bbox": [
+                337,
+                58,
+                40,
+                45
+            ],
+            "area": 1800.0,
+            "text": "गृह",
+            "category": "text"
+        },
+        {
+            "id": 4,
+            "bbox": [
+                389,
+                58,
+                122,
+                45
+            ],
+            "area": 5490.0,
+            "text": "मन्त्रालय",
+            "category": "text"
+        }
+    ]
+}

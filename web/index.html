@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mountmind PeakOCR - Advanced Interactive Preprocessing Visual Workspace</title>
+    <meta name="description" content="Mountmind PeakOCR Studio by Mountmind Labs - The advanced interactive preprocessing workspace for Devnagari & Nepali OCR. Features adaptive binarization, Shirorekha healing, local Gaussian blur kernels, and context-aware LLM spelling verification.">
+    <meta name="keywords" content="Mountmind PeakOCR, Mountmind Labs, Nepali OCR, Devnagari OCR, OCR Preprocessing, Shirorekha Healer, Tesseract Nepali, Gemini OCR, Matra Restoration, Document Binarization, Image Cleaning">
+    <meta name="author" content="Mountmind Labs">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="theme-color" content="#082c54">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="manifest" href="manifest.json">
+    <link rel="canonical" href="https://mountmind-peak-ocr-studio.web.app">
+    
+    <!-- Open Graph / Facebook / LinkedIn sharing cards -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mountmind-peak-ocr-studio.web.app">
+    <meta property="og:title" content="Mountmind PeakOCR - Advanced Interactive Preprocessing Visual Workspace">
+    <meta property="og:description" content="Stitch broken horizontal head-strokes (Shirorekha) and restore missing modifier matras under uneven lighting. Powered by local Gaussian binarization and context-aware Gemini AI.">
+    <meta property="og:image" content="https://mountmind-peak-ocr-studio.web.app/preprocessing_comparison.png">
+
+    <!-- Twitter sharing cards -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://mountmind-peak-ocr-studio.web.app">
+    <meta property="twitter:title" content="Mountmind PeakOCR - Advanced Preprocessing Visual Workspace">
+    <meta property="twitter:description" content="Stitch broken horizontal head-strokes (Shirorekha) and restore missing modifier matras under uneven lighting. Powered by local Gaussian binarization and context-aware Gemini AI.">
+    <meta property="twitter:image" content="https://mountmind-peak-ocr-studio.web.app/preprocessing_comparison.png">
+
+    <!-- Structured JSON-LD Data for Google Search Spider crawl rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Mountmind PeakOCR",
+      "operatingSystem": "All",
+      "applicationCategory": "BusinessApplication",
+      "description": "High-fidelity Devnagari and Nepali document OCR preprocessing engine. Combines custom local Gaussian thresholding with context-aware LLM Shirorekha healing.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Mountmind Labs",
+        "url": "https://mountmind-peak-ocr-studio.web.app"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
+    <link rel="stylesheet" href="style.css">
+    <!-- Tesseract.js for high-fidelity client-side OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+
+<body>
+    <div class="container fade-in">
+        <!-- Header -->
+        <header>
+            <h1>Mountmind PeakOCR Studio</h1>
+            <p>Optimize document cleaning, lighting normalization, and adaptive binarization with a high-fidelity interactive quality visualizer in real-time by Mountmind Labs.</p>
+            <div class="version-badge">Advanced Workspace v1.6</div>
+        </header>
+
+        <!-- Top Tab Navigation -->
+        <nav class="workbench-nav" style="display: flex; gap: 1rem; background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-glass); padding: 0.35rem; border-radius: 12px; align-self: center; margin-bottom: 0.5rem; justify-content: center; width: 100%; max-width: 600px;">
+            <button class="nav-tab active" id="nav-tab-workspace" onclick="switchWorkbenchTab('workspace')" style="background: transparent; border: none; color: var(--text-secondary); font-family: var(--font-inter); font-weight: 600; padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; transition: var(--transition-smooth); font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem;">🔬 Workspace</button>
+            <button class="nav-tab" id="nav-tab-training" onclick="switchWorkbenchTab('training')" style="background: transparent; border: none; color: var(--text-secondary); font-family: var(--font-inter); font-weight: 600; padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; transition: var(--transition-smooth); font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem;">📊 Training Hub</button>
+            <button class="nav-tab" id="nav-tab-generator" onclick="switchWorkbenchTab('generator')" style="background: transparent; border: none; color: var(--text-secondary); font-family: var(--font-inter); font-weight: 600; padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; transition: var(--transition-smooth); font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem;">✍️ Data Gen</button>
+        </nav>
+
+        <!-- Tab 1: OCR/HTR Production Workspace -->
+        <div class="workbench-panel active" id="panel-workspace" style="width: 100%;">
+            <!-- Main Workspace -->
+            <div class="main-grid">
+            <!-- Left Column: Workspace & Preprocessing Studio -->
+            <div class="workspace-column left-column">
+                <!-- Step 1 Badge Card & Visualizer -->
+                <div class="glass-panel visualizer-card mobile-active">
+                    <div class="step-header">
+                        <div class="step-badge">1</div>
+                        <div class="step-info">
+                            <h3>Document Visualizer</h3>
+                            <p>Drag & drop scanned pages to analyze interactive binarization stages.</p>
+                        </div>
+                    </div>
+
+                    <div class="tab-bar">
+                        <button class="tab-btn active" id="tab-compare" onclick="switchView('compare')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" style="margin-right: 4px; vertical-align: middle;">
+                                <path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            Interactive Slider
+                        </button>
+                        <button class="tab-btn" id="tab-grid" onclick="switchView('grid')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" style="margin-right: 4px; vertical-align: middle;">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            Comparative Stage Grid
+                        </button>
+                    </div>
+
+                    <!-- Views Display Box -->
+                    <div class="view-container">
+                        <!-- 1. Compare View Slider -->
+                        <div class="compare-view active" id="compare-pane">
+                            <div class="badge-label" id="label-after">Processed</div>
+                            <div class="badge-label" id="label-before">Original Document</div>
+
+                            <!-- After Canvas Pane (Foreground / Left clipped) -->
+                            <div class="img-pane" id="pane-after">
+                                <canvas id="canvas-after"></canvas>
+                            </div>
+
+                            <!-- Before Canvas Pane (Background / Full width) -->
+                            <div class="img-pane" id="pane-before">
+                                <canvas id="canvas-before"></canvas>
+                            </div>
+
+                            <!-- Drag slider bar -->
+                            <div class="slider-bar" id="drag-bar">
+                                <div class="slider-handle">
+                                    <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                                            transform="rotate(90 12 12)" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Pipeline Grid View -->
+                        <div class="grid-view" id="grid-pane">
+                            <div class="grid-item">
+                                <h4>1. Original Raw <span style="color:var(--rose);">BGR</span></h4>
+                                <canvas id="canvas-grid-1"></canvas>
+                                <div class="grid-desc">Raw OpenCV channels (simulated incorrect color scheme).</div>
+                            </div>
+                            <div class="grid-item">
+                                <h4>2. Color Corrected <span style="color:var(--emerald);">RGB</span></h4>
+                                <canvas id="canvas-grid-2"></canvas>
+                                <div class="grid-desc">Accurate color reproduction channel mapping.</div>
+                            </div>
+                            <div class="grid-item">
+                                <h4>3. Contrast <span style="color:var(--text-secondary);">Grayscale</span></h4>
+                                <canvas id="canvas-grid-3"></canvas>
+                                <div class="grid-desc">Removes color; exposes absolute pixel luminosity.</div>
+                            </div>
+                            <div class="grid-item">
+                                <h4>4. Gaussian Blur <span style="color:var(--secondary);">Smooth</span></h4>
+                                <canvas id="canvas-grid-4"></canvas>
+                                <div class="grid-desc">Low-pass smoothing kernel removes minor scanner fibers.</div>
+                            </div>
+                            <div class="grid-item">
+                                <h4>5. Global Binarized <span style="color:var(--text-secondary);">Threshold</span></h4>
+                                <canvas id="canvas-grid-5"></canvas>
+                                <div class="grid-desc">Binary threshold cuts (details or edges may fade).</div>
+                            </div>
+                            <div class="grid-item">
+                                <h4>6. Local Adaptive <span style="color:var(--emerald);">Gaussian C</span></h4>
+                                <canvas id="canvas-grid-6"></canvas>
+                                <div class="grid-desc highlight">Excellent uniform character margins under shadows.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Upload Zone -->
+                    <div class="upload-zone" id="drop-zone" onclick="triggerFileInput()">
+                        <div class="upload-icon">
+                            <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+                            </svg>
+                        </div>
+                        <div class="upload-text">
+                            <h3>Drag & Drop Nepali Document</h3>
+                            <p>Supports PNG, JPG, or JPEG scanned pages. Click to browse files.</p>
+                        </div>
+                    </div>
+                    <input type="file" id="file-input" class="file-input" accept="image/*"
+                        onchange="handleFileSelect(event)">
+                </div>
+
+                <!-- Step 2: Page Enhancements & Sliders -->
+                <div class="glass-panel controls-sidebar">
+                    <div class="step-header">
+                        <div class="step-badge">2</div>
+                        <div class="step-info">
+                            <h3>Document Scenario presets</h3>
+                            <p>Select document conditions to automatically adjust cleanup parameters.</p>
+                        </div>
+                    </div>
+
+                    <!-- HTR & OCR Pipeline Engine Setup -->
+                    <div class="pipeline-setup-container" style="margin-bottom: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1rem; display: flex; flex-direction: column; gap: 0.85rem;">
+                        <h4 style="font-family: var(--font-outfit); font-size: 0.85rem; color: #a4d3e6; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.35rem;">
+                            ⚙️ OCR & Pipeline Configuration
+                        </h4>
+                        <!-- Framework Selector -->
+                        <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+                            <label for="param-framework" style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600;">Target OCR Framework</label>
+                            <select id="param-framework" onchange="updateOCRFramework(this.value)" style="background: rgba(9,13,22,0.8); border: 1px solid var(--border-glass); border-radius: 6px; padding: 0.4rem; color: #fff; outline: none; font-size: 0.8rem; cursor: pointer; font-family: var(--font-inter);">
+                                <option value="tesseract">Tesseract OCR (Client-side Engine)</option>
+                                <option value="trocr">TrOCR Transformer (Fine-tuned Nepali)</option>
+                                <option value="paddleocr">PaddleOCR v4 (Devanagari PP-OCR)</option>
+                                <option value="easyocr">EasyOCR (CRAFT + CRNN)</option>
+                                <option value="gemini-flash">Gemini 1.5 Flash (Multimodal OCR & Auditor)</option>
+                                <option value="gemini-pro">Gemini 1.5 Pro (High-Fidelity AI Auditor)</option>
+                            </select>
+                        </div>
+                        <!-- Gemini API Key Input (Hidden by default, shown when Gemini is selected) -->
+                        <div id="gemini-key-container" style="display: none; flex-direction: column; gap: 0.3rem;">
+                            <label for="param-gemini-key" style="font-size: 0.75rem; color: #f59e0b; font-weight: 600;">🔑 Gemini API Key</label>
+                            <div style="position: relative; display: flex;">
+                                <input type="password" id="param-gemini-key" placeholder="Enter API Key..." oninput="updateGeminiKey(this.value)" style="width: 100%; background: rgba(9,13,22,0.8); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 0.4rem; padding-right: 2.2rem; color: #fff; outline: none; font-size: 0.8rem; font-family: var(--font-inter);">
+                                <button onclick="toggleKeyVisibility()" style="position: absolute; right: 0.4rem; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center;">
+                                    <svg id="eye-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Document Type Selector -->
+                        <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+                            <label for="param-doctype" style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600;">Document Format / Mode</label>
+                            <select id="param-doctype" onchange="updateDocType(this.value)" style="background: rgba(9,13,22,0.8); border: 1px solid var(--border-glass); border-radius: 6px; padding: 0.4rem; color: #fff; outline: none; font-size: 0.8rem; cursor: pointer; font-family: var(--font-inter);">
+                                <option value="printed">📄 Contemporary Printed Document</option>
+                                <option value="handwritten">✍️ Handwritten Manuscript (HTR Mode)</option>
+                            </select>
+                        </div>
+                        <!-- Layout Overlay Toggle -->
+                        <div class="toggle-group" style="padding: 0.5rem 0; background: transparent; border: none; margin: 0;">
+                            <div class="toggle-info">
+                                <span class="toggle-label" style="font-size: 0.8rem;">Layout Segment Overlay</span>
+                                <span class="toggle-desc" style="font-size: 0.65rem;">Paragraph (blue), Line (green), Word (purple)</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="param-layout-overlay" onchange="toggleLayoutOverlay(this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <!-- Despeckle Noise Toggle -->
+                        <div class="toggle-group" style="padding: 0.5rem 0; background: transparent; border: none; margin: 0;">
+                            <div class="toggle-info">
+                                <span class="toggle-label" style="font-size: 0.8rem;">Despeckle Noise Filter</span>
+                                <span class="toggle-desc" style="font-size: 0.65rem;">Removes isolated tiny black speckles/dust</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="param-despeckle" onchange="toggleDespeckle(this.checked)" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <!-- Margin Shadow Eraser Toggle -->
+                        <div class="toggle-group" style="padding: 0.5rem 0; background: transparent; border: none; margin: 0;">
+                            <div class="toggle-info">
+                                <span class="toggle-label" style="font-size: 0.8rem;">Margin Shadow Eraser</span>
+                                <span class="toggle-desc" style="font-size: 0.65rem;">Erases black scanner margins & border noise</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="param-clean-margins" onchange="toggleCleanMargins(this.checked)" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Preset Condition Blocks -->
+                    <div class="presets-container">
+                        <div class="presets-grid">
+                            <button class="preset-btn active" id="preset-normal" onclick="applyPreset('normal')">
+                                <span class="preset-title">📄 Standard Clean</span>
+                                <span class="preset-desc">Standard scan baseline cleanup parameters</span>
+                            </button>
+                            <button class="preset-btn" id="preset-shadow" onclick="applyPreset('shadow')">
+                                <span class="preset-title">🌘 Shadowed Camera</span>
+                                <span class="preset-desc">Local Gaussian C corrects uneven scanner/phone lighting</span>
+                            </button>
+                            <button class="preset-btn" id="preset-faint" onclick="applyPreset('faint')">
+                                <span class="preset-title">✍️ Faint Writing</span>
+                                <span class="preset-desc">Boosts contrast aggressively for faded diacritics & ink</span>
+                            </button>
+                            <button class="preset-btn" id="preset-noisy" onclick="applyPreset('noisy')">
+                                <span class="preset-title">🌫️ Noisy Page</span>
+                                <span class="preset-desc">Aggressive blur radius smooths scanner fibers & dots</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Sliders (Flat Layout) -->
+                    <div class="sliders-container" style="margin-top: 1.25rem; display: flex; flex-direction: column; gap: 1rem; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 1.25rem;">
+                        <h4 style="font-family: var(--font-outfit); font-size: 0.85rem; color: #a4d3e6; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                            🎛️ Preprocessing Parameters
+                        </h4>
+
+                        <!-- 1. Gaussian Blur -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>Gaussian Blur Radius</span>
+                                <span class="slider-val"><span id="val-blur">5</span> px</span>
+                            </div>
+                            <input type="range" id="param-blur" min="1" max="21" step="2" value="5"
+                                oninput="updateParam('blur', this.value)">
+                        </div>
+
+                        <!-- 2. Adaptive Neighborhood Size -->
+                        <div class="slider-group" id="adaptive-block-group">
+                            <div class="slider-header">
+                                <span>Adaptive Neighborhood</span>
+                                <span class="slider-val"><span id="val-block">11</span> px</span>
+                            </div>
+                            <input type="range" id="param-block" min="3" max="99" step="2" value="11"
+                                oninput="updateParam('block', this.value)">
+                        </div>
+
+                        <!-- 3. Adaptive Constant C -->
+                        <div class="slider-group" id="adaptive-c-group">
+                            <div class="slider-header">
+                                <span>Offset Constant (C Value)</span>
+                                <span class="slider-val"><span id="val-c">2</span></span>
+                            </div>
+                            <input type="range" id="param-c" min="-20" max="20" step="1" value="2"
+                                oninput="updateParam('c', this.value)">
+                        </div>
+
+                        <!-- 4. Deskew Rotation -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>Deskew Rotation Angle</span>
+                                <span class="slider-val"><span id="val-rotation">0</span>°</span>
+                            </div>
+                            <input type="range" id="param-rotation" min="-10" max="10" step="0.5" value="0"
+                                oninput="updateParam('rotation', this.value)">
+                        </div>
+
+                        <!-- 5. Margin Shadow Width -->
+                        <div class="slider-group" id="margin-percent-group">
+                            <div class="slider-header">
+                                <span>Margin Shadow Width</span>
+                                <span class="slider-val"><span id="val-margin-percent">3.5</span>%</span>
+                            </div>
+                            <input type="range" id="param-margin-percent" min="0.5" max="10" step="0.5" value="3.5"
+                                oninput="updateParam('marginPercent', this.value)">
+                        </div>
+                    </div>
+
+                    <!-- Action Button Block -->
+                    <div class="actions-block" style="margin-top: 1.25rem;">
+                        <button class="action-btn" onclick="downloadProcessedImage()">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"
+                                viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 4px;">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            Download Clean Scan
+                        </button>
+                        <button class="action-btn secondary-btn" onclick="resetPipeline()">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"
+                                viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 4px;">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                            Reset Canvas
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Recognition Hub & Intelligent AI Post-Processing -->
+            <div class="workspace-column right-column">
+                <!-- Step 3 Card: Master OCR & AI Healing CTA -->
+                <div class="glass-panel ocr-trigger-card">
+                    <div class="step-header">
+                        <div class="step-badge">3</div>
+                        <div class="step-info">
+                            <h3>Recognize & AI Heal Text</h3>
+                            <p>One-click character extraction and automated grammar/spelling diacritic healing.</p>
+                        </div>
+                    </div>
+
+                    <!-- Glowing Master CTA Button -->
+                    <button class="ocr-run-btn master-cta-btn" id="ocr-run-btn" onclick="runRealOCR()">
+                        <span class="sparkle-icon">✨</span>
+                        Run Intelligent OCR & AI Healing
+                    </button>
+
+                    <!-- Chained Progress Indicator -->
+                    <div class="ocr-progress-container" id="ocr-progress-container" style="display: none; margin-top: 1rem;">
+                        <div class="ocr-progress-status" id="ocr-progress-status">Initializing Tesseract OCR...</div>
+                        <div class="ocr-progress-bar-bg" style="width: 100%; height: 8px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; overflow: hidden; margin-top: 0.5rem;">
+                            <div class="ocr-progress-bar" id="ocr-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary) 0%, var(--emerald) 100%); transition: width 0.3s ease;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 Card: Intelligent Output Analytics Panel -->
+                <div class="glass-panel unified-results-card" id="unified-results-card">
+                    <!-- Tabs Navigation Bar -->
+                    <div class="workspace-tabs-bar">
+                        <button class="workspace-tab-btn active" id="wtab-btn-ai" onclick="switchWorkspaceTab('ai')">
+                            📄 Verified Text
+                        </button>
+                        <button class="workspace-tab-btn" id="wtab-btn-heatmap" onclick="switchWorkspaceTab('heatmap')">
+                            🔍 Word Confidence
+                        </button>
+                        <button class="workspace-tab-btn" id="wtab-btn-translation" onclick="switchWorkspaceTab('translation')">
+                            📊 Spelling Diff
+                        </button>
+                        <button class="workspace-tab-btn" id="wtab-btn-auditor" onclick="switchWorkspaceTab('auditor')">
+                            🛡️ Stamp & Sig Auditor
+                        </button>
+                        <button class="workspace-tab-btn" id="wtab-btn-raw" onclick="switchWorkspaceTab('raw')">
+                            ⚙️ Raw Output
+                        </button>
+                    </div>
+
+                    <!-- Tabs Content Box -->
+                    <div class="workspace-tab-contents">
+                        <!-- Tab Pane 1: Verified Final Text (Combines Corrected text and refined translation side-by-side) -->
+                        <div class="workspace-tab-pane active" id="pane-ai">
+                            <div class="ocr-box-ai" id="ocr-ai-card" style="border: none; background: transparent; padding: 0; display: flex; flex-direction: column; gap: 1rem;">
+                                <!-- Unique Shirorekha Healer Info Panel -->
+                                <div class="ai-unique-feature-panel" style="background: rgba(17, 151, 193, 0.05); border: 1px solid rgba(17, 151, 193, 0.2); padding: 0.85rem; border-radius: 12px; font-family: var(--font-inter); font-size: 0.8rem; line-height: 1.45; color: #a4d3e6;">
+                                    <span style="font-family: var(--font-outfit); font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.25rem; font-size: 0.85rem;">
+                                        🛡️ Active Shirorekha Healing & Matra Restoration
+                                    </span>
+                                    Cleans broken word head-strokes (Shirorekha) and restores dropped vowel diacritics under uneven shadow scans dynamically.
+                                </div>
+
+                                 <!-- Devanagari Complex Script Diagnostic Breakdowns -->
+                                 <div class="diagnostics-panel" style="background: rgba(16, 185, 129, 0.03); border: 1px solid rgba(16, 185, 129, 0.15); padding: 0.85rem; border-radius: 12px; font-family: var(--font-inter); display: flex; flex-direction: column; gap: 0.5rem;">
+                                     <span style="font-family: var(--font-outfit); font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem;">
+                                         🧬 Devanagari Script Diagnostics & Conjunct Breakdown
+                                     </span>
+                                     <div class="diagnostics-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; text-align: center; margin-top: 0.25rem;">
+                                         <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 0.4rem;">
+                                             <div id="diag-consonants" style="font-family: var(--font-outfit); font-size: 1.15rem; font-weight: 700; color: #fff;">0</div>
+                                             <div style="font-size: 0.65rem; color: var(--text-secondary); text-transform: uppercase;">Consonants</div>
+                                         </div>
+                                         <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 0.4rem;">
+                                             <div id="diag-matras" style="font-family: var(--font-outfit); font-size: 1.15rem; font-weight: 700; color: #10b981;">0</div>
+                                             <div style="font-size: 0.65rem; color: var(--text-secondary); text-transform: uppercase;">Vowel Matras</div>
+                                         </div>
+                                         <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 0.4rem;">
+                                             <div id="diag-conjuncts" style="font-family: var(--font-outfit); font-size: 1.15rem; font-weight: 700; color: #f59e0b;">0</div>
+                                             <div style="font-size: 0.65rem; color: var(--text-secondary); text-transform: uppercase;">Half/Conjuncts</div>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                <!-- Healed Devnagari Column (Full width) -->
+                                <div class="ai-output-box-wrapper" style="width: 100%;">
+                                    <div style="font-family: var(--font-outfit); font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                                        <span>नेपाली AI CORRECTED TEXT</span>
+                                        <span class="ocr-score excellent" id="ocr-badge" style="font-size: 0.75rem;">98% Accuracy</span>
+                                    </div>
+                                    <div class="ai-corrected-preview" id="ai-corrected-text-preview" style="background: rgba(9, 13, 22, 0.6); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem; color: var(--text-primary); font-family: var(--font-inter); font-size: 1.05rem; line-height: 1.7; min-height: 200px; max-height: 380px; overflow-y: auto;">
+                                        नेपाल सरकार मन्त्रिपरिषद्‌को निर्णय अनुसार परराष्ट्र मन्त्रालय...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Pane 2: Interactive Confidence Heatmap -->
+                        <div class="workspace-tab-pane" id="pane-heatmap">
+                            <!-- Real-time Bounding Box Search Finder -->
+                            <div class="ocr-search-bar" style="margin-bottom: 0.75rem; background: rgba(9, 13, 22, 0.5); border: 1px solid var(--border-glass); border-radius: 10px; padding: 0.5rem 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--text-muted);">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <input type="text" id="ocr-search-input" placeholder="Search Nepali/English words on canvas..." oninput="handleSearchInput(this.value)" style="background: transparent; border: none; outline: none; color: #fff; font-size: 0.85rem; flex: 1;">
+                                <button onclick="clearSearch()" id="ocr-search-clear-btn" style="display: none; background: transparent; border: none; outline: none; cursor: pointer; color: var(--text-muted);">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Heatmap toolbar buttons -->
+                            <div class="ocr-toolbar" style="margin-bottom: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: space-between;">
+                                <div class="toolbar-group" style="display: flex; gap: 0.35rem;">
+                                    <button class="tool-btn" id="btn-copy" onclick="copyToClipboard()" title="Copy to Clipboard">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                        </svg>
+                                        Copy Text
+                                    </button>
+                                </div>
+                                <div class="toolbar-group">
+                                    <div class="export-dropdown-container">
+                                        <button class="tool-btn dropdown-trigger">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                <polyline points="7 10 12 15 17 10"></polyline>
+                                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                                            </svg>
+                                            Export...
+                                        </button>
+                                        <div class="export-menu">
+                                            <button onclick="exportTXT()">Plain Text (.txt)</button>
+                                            <button onclick="exportJSON()">OCR Metadata (.json)</button>
+                                            <button onclick="exportHTML()">Heatmap Report (.html)</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Heatmap tags area -->
+                            <div class="ocr-processed-text interactive-heatmap" id="ocr-processed" style="background: rgba(9, 13, 22, 0.6); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem; min-height: 200px; max-height: 350px; overflow-y: auto;">
+                                नेपाल सरकार मन्त्रिपरिषद्‌को निर्णय अनुसार परराष्ट्र मन्त्रालय र सम्बद्ध विभाग...
+                            </div>
+                        </div>
+
+                        <!-- Tab Pane 3: Spelling Corrections Table & Diff -->
+                        <div class="workspace-tab-pane" id="pane-translation">
+                            <div style="font-family: var(--font-outfit); font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.75rem;">
+                                AI SPELLING CORRECTIONS LOG (DIFF)
+                            </div>
+                            
+                            <div class="ai-diff-report" id="ai-diff-report-preview" style="max-height: 240px; overflow-y: auto; border: 1px solid var(--border-glass); border-radius: 12px; background: rgba(9, 13, 22, 0.4); margin-bottom: 1rem;">
+                                <table class="ai-diff-table" style="width: 100%; border-collapse: collapse; font-family: var(--font-inter); font-size: 0.8rem;">
+                                    <thead>
+                                        <tr style="background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border-glass); text-align: left;">
+                                            <th style="padding: 0.65rem;">Original OCR</th>
+                                            <th style="padding: 0.65rem;">AI Corrected</th>
+                                            <th style="padding: 0.65rem;">Correction Reason</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ai-diff-table-body">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                        <!-- Tab Pane 5: Stamp and Signature Auditor -->
+                        <div class="workspace-tab-pane" id="pane-auditor">
+                            <div style="font-family: var(--font-outfit); font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+                                🛡️ MULTIMODAL LOGO, STAMP & SIGNATURE AUDITOR
+                            </div>
+                            
+                            <!-- Stamp & Logo Audit Section -->
+                            <div style="margin-bottom: 1.25rem;">
+                                <h4 style="font-size: 0.8rem; color: #a4d3e6; margin-bottom: 0.4rem; font-family: var(--font-outfit); text-transform: uppercase;">
+                                     stamps & logos
+                                </h4>
+                                <div id="audit-stamps-list" style="display: flex; flex-direction: column; gap: 0.6rem;">
+                                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 8px; padding: 0.65rem; color: var(--text-muted); font-size: 0.75rem; text-align: center;">
+                                        No stamps or logos audited yet. Run Gemini model to inspect official markers.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Signature Audit Section -->
+                            <div>
+                                <h4 style="font-size: 0.8rem; color: #a4d3e6; margin-bottom: 0.4rem; font-family: var(--font-outfit); text-transform: uppercase;">
+                                     signatures & identities
+                                </h4>
+                                <div id="audit-signatures-list" style="display: flex; flex-direction: column; gap: 0.6rem;">
+                                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 8px; padding: 0.65rem; color: var(--text-muted); font-size: 0.75rem; text-align: center;">
+                                        No signatures audited yet. Run Gemini model to identify signatories.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Pane 4: Raw Output -->
+                        <div class="workspace-tab-pane" id="pane-raw">
+                            <!-- Raw OCR Text output -->
+                            <div style="margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 1rem;">
+                                <div style="font-family: var(--font-outfit); font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">
+                                    RAW UNCORRECTED TESSERACT OCR (DEBUG)
+                                </div>
+                                <div class="ocr-raw-text" id="ocr-raw" style="background: rgba(9, 13, 22, 0.4); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1rem; min-height: 100px; max-height: 180px; overflow-y: auto; font-family: var(--font-inter); font-size: 0.85rem; line-height: 1.6; color: var(--rose);">
+                                    Raw Tesseract uncorrected output stream...
+                                </div>
+                            </div>
+
+                            <!-- Editable Source text area (for sandbox simulation tuning) -->
+                            <div class="ocr-input-group" style="margin-bottom: 1rem;">
+                                <label for="ocr-expected-text" class="ocr-input-label" style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem; display: block;">Expected Document Text (Editable Simulator Input):</label>
+                                <textarea id="ocr-expected-text" class="ocr-textarea" rows="4" style="width: 100%; background: rgba(9, 13, 22, 0.5); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-primary); padding: 0.6rem; font-family: var(--font-inter); font-size: 0.85rem; resize: vertical;" placeholder="Type or paste text to simulate pixel binarization degradation..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div> <!-- Closes main-grid -->
+        </div> <!-- Closes panel-workspace -->
+
+        <!-- Tab 2: HTR Training Hub -->
+        <div class="workbench-panel" id="panel-training" style="display: none; width: 100%;">
+            <div class="main-grid">
+                <!-- Left Column: Training Controls -->
+                <div class="workspace-column left-column">
+                    <div class="glass-panel">
+                        <div class="step-header">
+                            <div class="step-badge">1</div>
+                            <div class="step-info">
+                                <h3>Sequence Model & HTR Fine-Tuning</h3>
+                                <p>Train and evaluate handwritten text recognition models on Devanagari corpus.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="control-block" style="margin-top: 1.5rem;">
+                            <!-- Model Architecture Selector -->
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span>Model Architecture (PyTorch)</span>
+                                </div>
+                                <select id="train-architecture" style="width: 100%; background: rgba(9,13,22,0.8); border: 1px solid var(--border-glass); border-radius: 6px; padding: 0.5rem; color: #fff; outline: none; font-size: 0.85rem; margin-top: 0.5rem; font-family: var(--font-inter);">
+                                    <option value="crnn_ctc">CRNN + CTC Loss (VGG Feature Extractor + Bidirectional LSTM)</option>
+                                    <option value="trocr">TrOCR (ViT Encoder + RoBERTa Decoder Seq2Seq)</option>
+                                    <option value="attention_seq2seq">ResNet + GRU Attention (Sequence-to-Sequence)</option>
+                                </select>
+                            </div>
+
+                            <!-- Hyperparameters Grid -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <!-- Learning Rate -->
+                                <div class="slider-group">
+                                    <div class="slider-header">
+                                        <span>Learning Rate</span>
+                                    </div>
+                                    <select id="train-lr" style="width: 100%; background: rgba(9,13,22,0.8); border: 1px solid var(--border-glass); border-radius: 6px; padding: 0.4rem; color: #fff; outline: none; font-size: 0.8rem; margin-top: 0.4rem;">
+                                        <option value="1e-3">1e-3 (0.001)</option>
+                                        <option value="5e-4">5e-4 (0.0005)</option>
+                                        <option value="1e-4">1e-4 (0.0001)</option>
+                                        <option value="3e-5">3e-5 (0.00003)</option>
+                                    </select>
+                                </div>
+                                <!-- Optimizer -->
+                                <div class="slider-group">
+                                    <div class="slider-header">
+                                        <span>Optimizer</span>
+                                    </div>
+                                    <select id="train-optimizer" style="width: 100%; background: rgba(9,13,22,0.8); border: 1px solid var(--border-glass); border-radius: 6px; padding: 0.4rem; color: #fff; outline: none; font-size: 0.8rem; margin-top: 0.4rem;">
+                                        <option value="adamw">AdamW</option>
+                                        <option value="adam">Adam</option>
+                                        <option value="sgd">SGD + Momentum</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <!-- Batch Size -->
+                                <div class="slider-group">
+                                    <div class="slider-header">
+                                        <span>Batch Size</span>
+                                    </div>
+                                    <select id="train-batch" style="width: 100%; background: rgba(9,13,22,0.8); border: 1px solid var(--border-glass); border-radius: 6px; padding: 0.4rem; color: #fff; outline: none; font-size: 0.8rem; margin-top: 0.4rem;">
+                                        <option value="16">16 samples</option>
+                                        <option value="32" selected>32 samples</option>
+                                        <option value="64">64 samples</option>
+                                    </select>
+                                </div>
+                                <!-- Epochs -->
+                                <div class="slider-group">
+                                    <div class="slider-header">
+                                        <span>Max Epochs</span>
+                                    </div>
+                                    <select id="train-epochs" style="width: 100%; background: rgba(9,13,22,0.8); border: 1px solid var(--border-glass); border-radius: 6px; padding: 0.4rem; color: #fff; outline: none; font-size: 0.8rem; margin-top: 0.4rem;">
+                                        <option value="20">20 Epochs</option>
+                                        <option value="50" selected>50 Epochs</option>
+                                        <option value="100">100 Epochs</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Data Augmentation Toggle -->
+                            <div class="toggle-group">
+                                <div class="toggle-info">
+                                    <span class="toggle-label">Elastic Distortions & Augmentation</span>
+                                    <span class="toggle-desc">Simulates real paper bends and bleed-through</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="train-augmentation" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="actions-block" style="margin-top: 1rem; display: flex; gap: 1rem;">
+                                <button class="action-btn" id="btn-start-train" onclick="startMockTraining()" style="flex: 1; background: linear-gradient(135deg, var(--emerald) 0%, #059669 100%); border-color: rgba(16, 185, 129, 0.3); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);">
+                                    ⚡ Start Fine-Tuning
+                                </button>
+                                <button class="action-btn secondary-btn" id="btn-stop-train" onclick="stopMockTraining()" disabled style="flex: 0.5;">
+                                    Stop
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Training status details -->
+                    <div class="glass-panel">
+                        <h3 style="font-family: var(--font-outfit); font-size: 1.15rem; color: #fff; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                            📊 Current Training Metrics
+                            <span id="train-status-badge" style="background: rgba(100,130,155,0.15); border: 1px solid var(--border-glass); padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.75rem; color: var(--text-secondary);">Idle</span>
+                        </h3>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 1rem;">
+                            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 10px; padding: 0.6rem; text-align: center;">
+                                <div id="stat-epoch" style="font-family: var(--font-outfit); font-size: 1.25rem; font-weight: 700; color: #fff;">0 / 50</div>
+                                <div style="font-size: 0.65rem; color: var(--text-secondary); text-transform: uppercase; margin-top: 0.15rem;">Epoch</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 10px; padding: 0.6rem; text-align: center;">
+                                <div id="stat-loss" style="font-family: var(--font-outfit); font-size: 1.25rem; font-weight: 700; color: var(--rose);">0.0000</div>
+                                <div style="font-size: 0.65rem; color: var(--text-secondary); text-transform: uppercase; margin-top: 0.15rem;">CTC Loss</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 10px; padding: 0.6rem; text-align: center;">
+                                <div id="stat-cer" style="font-family: var(--font-outfit); font-size: 1.25rem; font-weight: 700; color: var(--primary);">0.00%</div>
+                                <div style="font-size: 0.65rem; color: var(--text-secondary); text-transform: uppercase; margin-top: 0.15rem;">Val CER</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 10px; padding: 0.6rem; text-align: center;">
+                                <div id="stat-wer" style="font-family: var(--font-outfit); font-size: 1.25rem; font-weight: 700; color: var(--emerald);">0.00%</div>
+                                <div style="font-size: 0.65rem; color: var(--text-secondary); text-transform: uppercase; margin-top: 0.15rem;">Val WER</div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div id="train-progress-container" style="display: none; width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; margin-top: 1rem; margin-bottom: 0.5rem;">
+                            <div id="train-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary) 0%, var(--emerald) 100%); transition: width 0.1s linear;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Training Plots & Logs -->
+                <div class="workspace-column right-column">
+                    <div class="glass-panel" style="min-height: 520px; display: flex; flex-direction: column; gap: 1.5rem;">
+                        <h3 style="font-family: var(--font-outfit); font-size: 1.15rem; color: #fff;">📈 Learning Curves & Error Rates</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem; flex: 1;">
+                            <!-- Loss Chart (using SVG) -->
+                            <div style="background: rgba(9,13,22,0.6); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1rem; position: relative; height: 200px;">
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+                                    <span>CTC Training & Validation Loss</span>
+                                    <div>
+                                        <span style="color: var(--rose); margin-right: 0.5rem;">● Train</span>
+                                        <span style="color: #60a5fa;">● Val</span>
+                                    </div>
+                                </div>
+                                <svg id="chart-loss-svg" style="width: 100%; height: 150px; overflow: visible;"></svg>
+                            </div>
+                            
+                            <!-- Error Rates Chart (using SVG) -->
+                            <div style="background: rgba(9,13,22,0.6); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1rem; position: relative; height: 200px;">
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+                                    <span>Character & Word Error Rates (CER/WER)</span>
+                                    <div>
+                                        <span style="color: var(--primary); margin-right: 0.5rem;">● CER</span>
+                                        <span style="color: var(--emerald);">● WER</span>
+                                    </div>
+                                </div>
+                                <svg id="chart-err-svg" style="width: 100%; height: 150px; overflow: visible;"></svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Console Training Logs -->
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <h4 style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase;">Real-time Model Training Stream Logs:</h4>
+                            <div id="train-console-logs" style="background: #020408; border: 1px solid var(--border-glass); border-radius: 10px; padding: 0.75rem; color: #10b981; font-family: monospace; font-size: 0.75rem; height: 120px; overflow-y: auto; white-space: pre-wrap; line-height: 1.4;">[System] Model Training Hub Initialized. Select parameters and click Start.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Synthetic Data Generator -->
+        <div class="workbench-panel" id="panel-generator" style="display: none; width: 100%;">
+            <!-- What is this? Explanation Banner -->
+            <div style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.25); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; display: flex; gap: 0.85rem; align-items: flex-start;">
+                <div style="font-size: 1.5rem; flex-shrink: 0;">🏭</div>
+                <div style="font-family: var(--font-inter); font-size: 0.82rem; line-height: 1.6; color: var(--text-secondary);">
+                    <div style="font-family: var(--font-outfit); font-weight: 700; color: #c7d2fe; font-size: 0.9rem; margin-bottom: 0.25rem;">What is the Synthetic OCR Corpus Builder?</div>
+                    This tool generates <strong style="color:#fff;">synthetic training images</strong> of Devanagari text lines — simulating real-world scan conditions like blur, ink bleed, rotation, speckle noise, and uneven lighting. Each image comes paired with <strong style="color:#fff;">COCO-format bounding box annotations</strong> (word-level JSON), which you can use to train or fine-tune deep learning OCR models (CRNN, TrOCR, PaddleOCR). Think of it as a <em style="color:#a4d3e6;">data factory</em>: you control the text, font, distortions — and it outputs labelled training pairs ready for your pipeline.
+                </div>
+            </div>
+            <div class="main-grid">
+                <!-- Left Column: Generator Controls -->
+                <div class="workspace-column left-column">
+                    <div class="glass-panel">
+                        <div class="step-header">
+                            <div class="step-badge">1</div>
+                            <div class="step-info">
+                                <h3>Synthetic OCR Corpus Builder</h3>
+                                <p>Generate simulated text line samples with custom fonts, distortions, and noise.</p>
+                            </div>
+                        </div>
+
+                        <div class="control-block" style="margin-top: 1.5rem;">
+                            <!-- Input Text Selector -->
+                            <div class="ocr-input-group">
+                                <label for="gen-text-input" class="ocr-input-label">Devanagari Corpus Text Source</label>
+                                <textarea id="gen-text-input" class="ocr-textarea" rows="3" style="width: 100%; background: rgba(9, 13, 22, 0.5); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-primary); padding: 0.6rem; font-family: var(--font-inter); font-size: 0.85rem; resize: vertical;">नेपाल सरकार गृह मन्त्रालय सिंहदरबार</textarea>
+                                <button onclick="loadRandomNepaliPhrase()" style="align-self: flex-end; background: transparent; border: none; color: var(--primary); font-size: 0.75rem; cursor: pointer; text-decoration: underline; margin-top: 0.25rem;">🎲 Load Random Nepali Phrase</button>
+                            </div>
+
+                            <!-- Font Selection -->
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span>Devanagari Font Style</span>
+                                </div>
+                                <select id="gen-font" onchange="runSyntheticGenerator()" style="width: 100%; background: rgba(9,13,22,0.8); border: 1px solid var(--border-glass); border-radius: 6px; padding: 0.4rem; color: #fff; outline: none; font-size: 0.8rem; margin-top: 0.4rem;">
+                                    <option value="Outfit, sans-serif">Modern Printed Style (Outfit Sans)</option>
+                                    <option value="Inter, sans-serif">Contemporary Sans (Inter)</option>
+                                    <option value="'Times New Roman', serif">Traditional Serif Style</option>
+                                    <option value="'Courier New', monospace">Typographic Mono Courier</option>
+                                    <option value="cursive">Handwritten Simulated script</option>
+                                </select>
+                            </div>
+
+                            <!-- Skew Rotation Slider -->
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span>Skew Angle Rotation</span>
+                                    <span class="slider-val"><span id="val-gen-rotation">0</span>°</span>
+                                </div>
+                                <input type="range" id="param-gen-rotation" min="-15" max="15" step="0.5" value="0" oninput="updateGenParam('rotation', this.value)">
+                            </div>
+
+                            <!-- Blur Slider -->
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span>Gaussian Ink Bleed / Blur</span>
+                                    <span class="slider-val"><span id="val-gen-blur">0</span> px</span>
+                                </div>
+                                <input type="range" id="param-gen-blur" min="0" max="6" step="0.5" value="0" oninput="updateGenParam('blur', this.value)">
+                            </div>
+
+                            <!-- Salt & Pepper Noise -->
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span>Scanner Speckle Noise</span>
+                                    <span class="slider-val"><span id="val-gen-noise">5</span>%</span>
+                                </div>
+                                <input type="range" id="param-gen-noise" min="0" max="25" step="1" value="5" oninput="updateGenParam('noise', this.value)">
+                            </div>
+
+                            <!-- Vignette Shadow Slider -->
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span>Uneven Vignette Shadow</span>
+                                    <span class="slider-val"><span id="val-gen-shadow">15</span>%</span>
+                                </div>
+                                <input type="range" id="param-gen-shadow" min="0" max="100" step="5" value="15" oninput="updateGenParam('shadow', this.value)">
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="actions-block" style="margin-top: 1rem; display: flex; gap: 0.75rem;">
+                                <button class="action-btn" onclick="runSyntheticGenerator()" style="flex: 1;">
+                                    🎲 Generate Sample
+                                </button>
+                                <button class="action-btn secondary-btn" onclick="downloadSyntheticImage()" style="flex: 1;">
+                                    📥 Save Image
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Interactive Generated Sample Canvas & Annotations -->
+                <div class="workspace-column right-column">
+                    <div class="glass-panel" style="display: flex; flex-direction: column; gap: 1.5rem; min-height: 520px;">
+                        <h3 style="font-family: var(--font-outfit); font-size: 1.15rem; color: #fff;">👁️ Generated Training Sample</h3>
+                        
+                        <!-- Page layout visualization window -->
+                        <div style="background: #06090f; border: 1px solid var(--border-glass); border-radius: 16px; padding: 1.5rem; display: flex; justify-content: center; align-items: center; min-height: 200px;">
+                            <canvas id="canvas-synthetic" style="max-width: 100%; max-height: 180px; object-fit: contain; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 4px 15px rgba(0,0,0,0.4);"></canvas>
+                        </div>
+
+                        <!-- Annotation Summary Cards -->
+                        <div id="synthetic-summary-cards" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
+
+                        <!-- COCO/YOLO annotations output JSON -->
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase;">COCO Format Bounding Box Annotations</h4>
+                                    <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem;">Word-level bbox labels for training OCR/detection models (CRNN, TrOCR, YOLOv8)</p>
+                                </div>
+                                <button class="tool-btn" onclick="downloadSyntheticAnnotations()" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Download JSON</button>
+                            </div>
+                            <pre id="synthetic-annotations-json" style="background: #020408; border: 1px solid var(--border-glass); border-radius: 10px; padding: 0.75rem; color: #60a5fa; font-family: monospace; font-size: 0.72rem; height: 200px; overflow-y: auto; line-height: 1.5; white-space: pre-wrap;">{}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    <!-- Glowing Bounding Box Hover Tooltip -->
+    <div id="ocr-word-tooltip" class="ocr-word-tooltip" style="display: none; position: absolute; z-index: 1000;"></div>
+
+    <!-- Sleek Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Script Entry -->
+    <script src="app.js"></script>
+</body>
+
+</html>
