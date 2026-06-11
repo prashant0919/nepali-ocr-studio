@@ -55,7 +55,7 @@ def generate_random_sentence():
     ]
     return random.choice(structures)()
 
-def build_hf_dataset(output_dir="dataset", num_train=150, num_test=30):
+def build_hf_dataset(output_dir="dataset", num_train=1000, num_test=200):
     print("=" * 60)
     print("      Mountmind PeakOCR - Hugging Face Dataset Builder")
     print("=" * 60)
