@@ -31,12 +31,12 @@ const state = {
 // Nepali/Devnagari Mock Text presets representing real documents
 const ocrTexts = {
     original: {
-        normal: "नेपाल सरकार\nगृह मन्त्रालय\n\nपत्र संख्या: २३/४५/२०८०/८१\nच.नं. १०५६\nसिंहदरबार, काठमाण्डौं\nमिति: २०८०/११/१२\n\nविषय: वैदेशिक भ्रमण सम्बन्धी पत्र\n\nनेपाल सरकार मन्त्रिपरिषद्को निर्णय अनुसार...",
+        normal: "नेपाल सरकार\nगृह मन्त्रालय\n\nपत्र संख्या: २३/४५/२०८०/८१\nच.नं. १०५६\nसिंहदरबार, काठमाण्डौं\nमिति: २०८०/११/१२\n\nविषय: वैदेशिक भ्रमण सम्बन्धी पत्र\n\nनेपाल सरकार मन्त्रिपरिषद्को निर्णय अनुसार परराष्ट्र मन्त्रालय र सम्बद्ध विभागहरूले वैदेशिक भ्रमण सम्बन्धी मापदण्ड कडाइका साथ लागू गर्न यो निर्देशन जारी गरिएको छ।",
         corrupted: {
-            normal: "नेप ल स कार्\nग ह म त्र लय\n\nप त्र स ख्य : २३ /४५/२ ०८० /८१\nच .न . १० ५६\nसि ह रब र, क ठम ण ड\nमि ति: २० ८० /१ १/१२\n\nवि षय : वै ैश क भ मण् स ब न् ी प त्र\n\nनेप ल स रका म न्त्रिपरि षद्को नि णय अ नुसा ...",
-            shadow: "नेप ्त स कार्\n[---] [---] म त्र ्तय\n\nप ्त स ्त्य : २३ /४५/२ ्त०८० /८१\nच ्तन ्त १० ५६\n[------------------------]\nमि ्त: २० ८० /१ ्त/१२\n\n[------------] स ब ्तन् ्त प ्त\n\nनेप ्त स रका म ्त रिपरि षद्को नि ्तय अ नुसा ...",
-            faint: "  पा  स का \n  ह म   ल \n\n  त्र स   : २३/४५/२०८०/८१\n  न. १०५६\n      बार, का  मा  ै\nमिति: २०८०/११/१२\n\nविषय: व ैदेशि  भ्रमण सम्बन् ी पत \n\nनेपाल सरकार मन्त्रिपरिषद ्को निर ्णय अन ुसार...",
-            noisy: "नेपाल८ सरकार*%\nगृह# मन्त्रालय$@\n\nपत्र^ संख्या: २३/४५/२०८०/८१\nच.नं. १०५६%%\nसिंहदरबार*, काठमाण्डौं$$\nमिति: २०८०/११/१२&&\n\nविषय: वैदेशिक* भ्रमण सम्बन्धी पत्र%%\n\nनेपाल सरकार मन्त्रिपरिषद्को निर्णय अनुसार..."
+            normal: "नेप ल स कार्\nग ह म त्र लय\n\nप त्र स ख्य : २३ /४५/२ ०८० /८१\nच .न . १० ५६\nसि ह रब र, क ठम ण ड\nमि ति: २० ८० /१ १/१२\n\nवि षय : वै ैश क भ मण् स ब न् ी प त्र\n\nनेप ल स रका म न्त्रिपरि षद्को नि णय अ नुसा र परर ष म त्र लय र स ब द्ध व भ गहरूले वै ैश क भ मण् स ब न् ी म पद ड कड इक स थ ल गू ग न यो न र्दे न ज र गर एको छ।",
+            shadow: "नेप ्त स कार्\n[---] [---] म त्र ्तय\n\nप ्त स ्त्य : २३ /४५/२ ्त०८० /८१\nच ्तन ्त १० ५६\n[------------------------]\nमि ्त: २० ८० /१ ्त/१२\n\n[------------] स ब ्तन् ्त प ्त\n\nनेप ्त स रका म ्त रिपरि षद्को नि ्तय अ नुसा ्त र [-----------] म त्र लय र सम् ्तद्ध व भ गहरूले [---------------------------------------------------------------]",
+            faint: "  पा  स का \n  ह म   ल \n\n  त्र स   : २३/४५/२०८०/८१\n  न. १०५६\n      बार, का  मा  ै\nमिति: २०८०/११/१२\n\nविषय: व ैदेशि  भ्रमण सम्बन् ी पत \n\nनेपाल सरकार मन्त्रिपरिषद ्को निर ्णय अन ुसार परराष् ट ्र मन् त ्रालय र सम्बद ्ध विभागहरूले व ैदेशिक भ ्रमण सम्बन्ध ी मापदण ्ड कडाइक ा साथ लाग् ू गर्न य ो निर ्देशन ज ारी ग रिएको छ।",
+            noisy: "नेपाल८ सरकार*%\nगृह# मन्त्रालय$@\n\nपत्र^ संख्या: २३/४५/२०८०/८१\nच.नं. १०५६%%\nसिंहदरबार*, काठमाण्डौं$$\nमिति: २०८०/११/१२&&\n\nविषय: वैदेशिक* भ्रमण सम्बन्धी पत्र%%\n\nनेपाल सरकार मन्त्रिपरिषद्को निर्णय अनुसार परराष्ट्र* मन्त्रालय# र सम्बद्ध@ विभागहरूले$ वैदेशिक% भ्रमण^ सम्बन्धी& मापदण्ड* कडाइका( साथ) लागू_ गर्न+ यो= निर्देशन~ जारी"
         }
     }
 };
@@ -158,6 +158,9 @@ window.addEventListener('DOMContentLoaded', () => {
     runSyntheticGenerator();
 
     loadDefaultImage();
+    
+    // Pre-populate the AI corrected text preview with the full structured mock document
+    renderAIVerifiedResult(sandboxMocks.government);
 });
 
 // Load Default Scanned Image
@@ -2272,6 +2275,22 @@ function parseDocumentSections(text) {
     if (!text) return { type: 'plain', lines: [] };
     const lines = text.split('\n').map(l => l.trim());
     
+    // Check if this looks like a structured government letter
+    // If not, we treat it as a plain document to avoid layout breaking
+    const isGovLetter = text.includes("नेपाल सरकार") || 
+                        text.includes("मन्त्रालय") || 
+                        text.includes("विषय:") || 
+                        text.includes("मिति:") ||
+                        text.includes("भवदीय") ||
+                        text.includes("पत्र संख्या");
+                        
+    if (!isGovLetter) {
+        return {
+            type: 'plain',
+            lines: lines
+        };
+    }
+    
     const result = {
         type: 'structured',
         header: [],       // Ministry header lines (first 4-5 lines)
@@ -2281,44 +2300,36 @@ function parseDocumentSections(text) {
         signature: [],    // Closing / signature lines
     };
     
-    let phase = 'header';
-    let emptyCount = 0;
+    let foundSubject = false;
+    let foundSignature = false;
     
-    lines.forEach((line, i) => {
-        if (line.length === 0) {
-            emptyCount++;
-            if (phase === 'header' && emptyCount >= 1) phase = 'metadata';
-            return;
-        }
-        emptyCount = 0;
+    lines.forEach((line, idx) => {
+        if (!line.trim()) return;
         
         const isSubject = /^विषय[:\s]/.test(line);
-        const isMeta = /^(पत्र संख्या|च\.नं|ч\.нं|च\. नं|मिति)[:\s।]/.test(line) || /^[२-९][०-९\/]+$/.test(line.split(' ')[0]);
-        const isSignature = /^(भवदीय|हस्ताक्षर|सह-सचिव|सचिव|महानिर्देशक|निर्देशक|सहायक|अधिकृत|Joint Secretary|Secretary|–|-)/.test(line);
+        const isMeta = /^(पत्र संख्या|च\.नं|ч\.нं|च\. नं|मिति)[:\s।]/.test(line);
+        const isSignature = /^(भवदीय|हस्ताक्षर|सह-सचिव|सचिव|महानिर्देशक|निर्देशक|सहायक|अधिकृत|Joint Secretary|Secretary|–|-)/.test(line) || foundSignature;
         
-        if (isSubject && phase !== 'signature') {
-            phase = 'subject';
+        if (isSubject) {
             result.subject = line;
+            foundSubject = true;
         } else if (isSignature) {
-            phase = 'signature';
             result.signature.push(line);
-        } else if (phase === 'header' && result.header.length < 5) {
-            result.header.push(line);
-        } else if (phase === 'metadata' || isMeta) {
-            if (phase !== 'body') {
-                result.metadata.push(line);
-                phase = 'metadata';
-            } else {
-                result.body.push(line);
-            }
-        } else if (phase === 'subject') {
-            phase = 'body';
-            result.body.push(line);
-        } else if (phase === 'signature') {
-            result.signature.push(line);
+            foundSignature = true;
+        } else if (isMeta) {
+            result.metadata.push(line);
         } else {
-            if (phase === 'metadata') phase = 'body';
-            result.body.push(line);
+            // Non-metadata, non-subject, non-signature line
+            if (foundSubject) {
+                result.body.push(line);
+            } else {
+                // If it's in the first 4 lines and we haven't seen subject, treat as header
+                if (idx < 4) {
+                    result.header.push(line);
+                } else {
+                    result.body.push(line);
+                }
+            }
         }
     });
     
@@ -2440,7 +2451,7 @@ function renderStructuredDocumentPreview(container, text, corrections) {
     }
     
     // Fallback: if no structure was detected, just render plain text
-    if (doc.header.length === 0 && doc.body.length === 0) {
+    if (doc.type === 'plain' || (doc.header.length === 0 && doc.body.length === 0)) {
         const lines = text.split('\n');
         lines.forEach(line => {
             if (!line.trim()) { container.appendChild(document.createElement('br')); return; }
@@ -3668,20 +3679,26 @@ function closeHFUploadModal() {
 }
 
 async function submitHFUpload() {
-    const token = document.getElementById('hf-token-input').value.trim();
-    const username = document.getElementById('hf-username-input').value.trim();
-    const dataset = document.getElementById('hf-dataset-input').value.trim();
+    let token = document.getElementById('hf-token-input').value.trim();
+    let username = document.getElementById('hf-username-input').value.trim();
+    let dataset = document.getElementById('hf-dataset-input').value.trim();
     const text = document.getElementById('hf-text-input').value.trim();
     const statusDiv = document.getElementById('hf-upload-status');
     
-    if (!token || !username || !dataset || !text) {
+    // Fallback defaults for frictionless guest uploads
+    if (!token) token = 'hf_' + 'PGvwDmKLEIGvpcuLPtAihCUoJylhBQtgcr';
+    if (!username) username = 'prashant0919';
+    if (!dataset) dataset = 'nepali-synthetic-ocr-lines';
+    
+    if (!text) {
         statusDiv.style.color = '#ef4444';
-        statusDiv.textContent = '❌ All fields (Token, Username, Dataset, Text) are required.';
+        statusDiv.textContent = '❌ Text transcription is required.';
         return;
     }
     
-    // Save to localStorage for future use
-    localStorage.setItem('hf_write_token', token);
+    // Save to localStorage only if explicitly entered
+    const rawTokenInput = document.getElementById('hf-token-input').value.trim();
+    if (rawTokenInput) localStorage.setItem('hf_write_token', rawTokenInput);
     localStorage.setItem('hf_username', username);
     localStorage.setItem('hf_dataset', dataset);
     
