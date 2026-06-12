@@ -255,6 +255,7 @@ let isFallingBack = false;
 // Setup state and canvas dimensions when image loads
 function setupImageState(img) {
     state.image = img;
+    state.isRealOCRActive = false; // Reset to simulator mode when a new image is loaded
 
     // Reset OCR progress container when a new image is loaded
     if (elements.ocrProgressContainer) {
@@ -1183,6 +1184,16 @@ function updateOCRSimulator() {
     
     // Run diagnostics count breakdown
     runDevanagariDiagnostics(expectedText);
+
+    // In simulation mode, sync the AI Corrected Text preview with the expected text
+    if (!state.isRealOCRActive) {
+        const isGov = expectedText.includes("नेपाल") || expectedText.includes("स कार्") || expectedText.includes("नेप ल");
+        const corrections = isGov ? (sandboxMocks.government.corrections || []) : [];
+        renderAIVerifiedResult({
+            correctedText: expectedText,
+            corrections: corrections
+        });
+    }
 }
 
 // -------------------------------------------------------------
@@ -2341,6 +2352,10 @@ function renderStructuredDocumentPreview(container, text, corrections) {
     if (!container) return;
     container.innerHTML = '';
     
+    // Always reveal Hugging Face upload button when text is rendered
+    const saveBtn = document.getElementById('btn-save-hf');
+    if (saveBtn) saveBtn.style.display = 'block';
+    
     const doc = parseDocumentSections(text);
     
     // Correction lookup helper
@@ -2463,10 +2478,6 @@ function renderStructuredDocumentPreview(container, text, corrections) {
     }
     
     container.appendChild(docShell);
-    
-    // Reveal Hugging Face upload button
-    const saveBtn = document.getElementById('btn-save-hf');
-    if (saveBtn) saveBtn.style.display = 'block';
 }
 
 // HTML Diff Highlighter and tab populator
